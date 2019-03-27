@@ -1,5 +1,5 @@
 # coselection
-Simplesamlphp module, tested with version **1.14**, that enables selection of a CO when the users belongs to multiple ones
+Simplesamlphp module, tested with version **1.14**, that enables selection of a CO/VO when the users belongs to multiple ones
 
 In order to enable the plugin follow the steps below:
 - Copy/Clone the plugin under the path `./modules`
