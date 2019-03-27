@@ -1,0 +1,38 @@
+{
+	"yes": {
+		"en": "Continue"
+	},
+	"no": {
+		"en": "Abort"
+	},
+	"co_selection_accept": {
+		"en": "SPNAME will be using the information below"
+	},
+	"co_selection_privacy_policy": {
+		"en": "Privacypolicy for the service"
+	},
+	"no_co_selection_title": {
+		"en": "Abort co selection"
+	},
+	"no_co_selection_text": {
+		"en": "You did not desire to select values for your cos to SPNAME."
+	},
+	"no_co_selection_return": {
+		"en": "Return to co selection page"
+	},
+	"co_selection_header": {
+		"en": "Select the values of your cos that are going to be released"
+	},
+	"co_selection_cos_header": {
+		"en": "Choose your preferred Virtual Organisation (VO) to access SPNAME"
+	},
+	"no_co_selection_goto_about": {
+		"en": "Go to information page for the service"
+	},
+	"co_selection_purpose": {
+		"en": "The purpose of SPNAME is SPDESC"
+	},
+	"abort": {
+		"en": "Abort login to SPNAME"
+	}
+}
