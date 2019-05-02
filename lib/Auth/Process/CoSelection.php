@@ -19,7 +19,10 @@
  *    ),
  *  ),
  */
-class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_ProcessingFilter {
+
+namespace SimpleSAML\Module\saml\Auth\Process;
+
+class CoSelection extends \SimpleSAML\Auth\ProcessingFilter {
 
   private $_userIdAttribute = 'eduPersonUniqueId';
 
@@ -56,7 +59,7 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
     parent::__construct($config, $reserved);
     if (array_key_exists('requiredattributes', $config)) {
       if (!is_array($config['requiredattributes'])) {
-        throw new SimpleSAML_Error_Exception(
+        throw new \SimpleSAML\Error\Exception(
           'CoSelection: requiredattributes must be an array. ' .
           var_export($config['requiredattributes'], true) . ' given.'
         );
@@ -103,7 +106,7 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
     $spEntityId = $state['Destination']['entityid'];
     $idpEntityId = $state['Source']['entityid'];
     $userAttributes = $state['Attributes'];
-    $metadata = SimpleSAML_Metadata_MetaDataStorageHandler::getMetadataHandler();
+    $metadata = \SimpleSAML\Metadata\MetaDataStorageHandler::getMetadataHandler();
     /**
      * If the attribute selection module is active on a bridge $state['saml:sp:IdP']
      * will contain an entry id for the remote IdP. If not, then the
@@ -119,21 +122,21 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
     // Do not use attribute selection if disabled
     // coselection.disable like attributeselection.disable from attribute selection module
     if (isset($state['Source']['coselection.disable']) && self::checkDisable($state['Source']['coselection.disable'], $spEntityId)) {
-      SimpleSAML_Logger::debug('CoSelection: CoSelection disabled for entity ' . $spEntityId . ' with IdP ' . $idpEntityId);
-      SimpleSAML_Stats::log('coselection:disabled', $statsData);
+      \SimpleSAML\Logger::debug('CoSelection: CoSelection disabled for entity ' . $spEntityId . ' with IdP ' . $idpEntityId);
+      \SimpleSAML\Stats::log('coselection:disabled', $statsData);
       return;
     }
     if (isset($state['Destination']['coselection.disable']) && self::checkDisable($state['Destination']['coselection.disable'], $idpEntityId)) {
-      SimpleSAML_Logger::debug('CoSelection: CoSelection disabled for entity ' . $spEntityId . ' with IdP ' . $idpEntityId);
-      SimpleSAML_Stats::log('coselection:disabled', $statsData);
+      \SimpleSAML\Logger::debug('CoSelection: CoSelection disabled for entity ' . $spEntityId . ' with IdP ' . $idpEntityId);
+      \SimpleSAML\Stats::log('coselection:disabled', $statsData);
       return;
     }
     $state['coselection:intro'] = $this->_intro;
     $state['coselection:requiredattributes'] = $this->_requiredattributes;
     // User interaction nessesary. Throw exception on isPassive request
     if (isset($state['isPassive']) && $state['isPassive'] === true) {
-      SimpleSAML_Stats::log('coselection:nopassive', $statsData);
-      throw new SimpleSAML_Error_NoPassive(
+      \SimpleSAML\Stats::log('coselection:nopassive', $statsData);
+      throw new \SimpleSAML\Error\NoPassive(
         'Unable to give attribute selection on passive request.'
       );
     }
@@ -146,16 +149,16 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
       }
     }
     if (!$hasValues) {
-      SimpleSAML_Logger::debug('CoSelection: User doesn\'t have the required attributes for co selection');
-      SimpleSAML_Stats::log('coSelection:empty', $statsData);
+      \SimpleSAML\Logger::debug('CoSelection: User doesn\'t have the required attributes for co selection');
+      \SimpleSAML\Stats::log('coSelection:empty', $statsData);
       return;
     }
     foreach ($state['coselection:requiredattributes'] as $key => $value) {
       if (isset($key) && $key == $this->_userIdAttribute) {
         $orgId = $state['Attributes'][$this->_userIdAttribute][0];
-        SimpleSAML_Logger::debug("[coselection] process: orgId=". var_export($orgId, true));
+        \SimpleSAML\Logger::debug("[coselection] process: orgId=". var_export($orgId, true));
         $basicInfo = $this->_getBasicInfo($orgId);
-        SimpleSAML_Logger::debug("[coselection] process: basicInfo=". var_export($basicInfo, true));
+        \SimpleSAML\Logger::debug("[coselection] process: basicInfo=". var_export($basicInfo, true));
         if(isset($basicInfo) && count($basicInfo) > 0){
           $coMembership = array();
           foreach ($basicInfo as $co){
@@ -184,9 +187,9 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
         unset($state['coselection:requiredattributes']);
       }
 
-      SimpleSAML_Stats::log('coSelection:accept', $statsInfo);
+      \SimpleSAML\Stats::log('coSelection:accept', $statsInfo);
       // Resume processing
-      SimpleSAML_Auth_ProcessingChain::resumeProcessing($state);
+      \SimpleSAML\Auth\ProcessingChain::resumeProcessing($state);
     } elseif (!isset($state['coselection:coMembership']) || count($state['coselection:coMembership']) < 1) {
       // Remove the fields that we do not want any more
       if (array_key_exists('coselection:coMembership', $state)) {
@@ -201,8 +204,8 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
       return;
     } else {
       // Save state and redirect
-      $id = SimpleSAML_Auth_State::saveState($state, 'coselection:request');
-      $url = SimpleSAML_Module::getModuleURL('coselection/getcoselection.php');
+      $id = \SimpleSAML\Auth\State::saveState($state, 'coselection:request');
+      $url = \SimpleSAML\Module::getModuleURL('coselection/getcoselection.php');
       SimpleSAML\Utils\HTTP::redirectTrustedURL($url, array('StateId' => $id));
     }
   }
@@ -210,7 +213,7 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
 
   private function _getBasicInfo($orgId)
   {
-    SimpleSAML_Logger::debug("[coselection] _getBasicInfo: orgId=". var_export($orgId, true));
+    \SimpleSAML\Logger::debug("[coselection] _getBasicInfo: orgId=". var_export($orgId, true));
 
     $db = SimpleSAML\Database::getInstance();
     $queryParams = array(
@@ -219,7 +222,7 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
     $stmt = $db->read($this->_basicInfoQuery, $queryParams);
     if ($stmt->execute()) {
       if ($result = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-        SimpleSAML_Logger::debug("[coselection] _getBasicInfo: result=". var_export($result, true));
+        \SimpleSAML\Logger::debug("[coselection] _getBasicInfo: result=". var_export($result, true));
         return $result;
       }
     } else {
@@ -231,8 +234,8 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
 
   private function _showException($e)
   {
-    $globalConfig = SimpleSAML_Configuration::getInstance();
-    $t = new SimpleSAML_XHTML_Template($globalConfig, 'coselection:exception.tpl.php');
+    $globalConfig = \SimpleSAML\Configuration::getInstance();
+    $t = new \SimpleSAML\XHTML\Template($globalConfig, 'coselection:exception.tpl.php');
     $t->data['e'] = $e->getMessage();
     $t->show();
     exit();
