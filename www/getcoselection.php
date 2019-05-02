@@ -18,15 +18,15 @@
  * so this is just to make sure.
  */
 session_cache_limiter('nocache');
-$globalConfig = SimpleSAML_Configuration::getInstance();
-SimpleSAML_Logger::info('CoSelection - coselection: Accessing co selection interface');
+$globalConfig = \SimpleSAML\Configuration::getInstance();
+\SimpleSAML\Logger::info('CoSelection - coselection: Accessing co selection interface');
 if (!array_key_exists('StateId', $_REQUEST)) {
-    throw new SimpleSAML_Error_BadRequest(
+    throw new \SimpleSAML\Error\BadRequest(
         'Missing required StateId query parameter.'
     );
 }
 $id = $_REQUEST['StateId'];
-$state = SimpleSAML_Auth_State::loadState($id, 'coselection:request');
+$state = \SimpleSAML\Auth\State::loadState($id, 'coselection:request');
 
 // Handle user's choice and return to simplesaml to load the next plugin
 if (array_key_exists('coSelection', $_REQUEST)) {
@@ -34,8 +34,8 @@ if (array_key_exists('coSelection', $_REQUEST)) {
   $choice = explode(":", $_REQUEST['coSelection']);
   $cosInState = $state['coselection:coMembership'];
   if($cosInState[$choice[0]] != $choice[1]){
-    SimpleSAML_Logger::debug('getcoselection: the requested co is not in the retrieved list ');
-    throw new SimpleSAML_Error_BadRequest('Missing required CO id retrieved from query.');
+    \SimpleSAML\Logger::debug('getcoselection: the requested co is not in the retrieved list ');
+    throw new \SimpleSAML\Error\BadRequest('Missing required CO id retrieved from query.');
   }else{
     // Add the CO selected in the state
     $state['COSelected'] = array($choice[0] => $choice[1]);
@@ -70,13 +70,13 @@ if ( array_key_exists('yes', $_REQUEST) || array_key_exists('no', $_REQUEST) ) {
 
 // The user has pressed the yes-button
 if (array_key_exists('yes', $_REQUEST)) {
-  SimpleSAML_Stats::log('coSelection:accept', $statsInfo);
+  \SimpleSAML\Stats::log('coSelection:accept', $statsInfo);
   // Resume processing
-  SimpleSAML_Auth_ProcessingChain::resumeProcessing($state);
+  \SimpleSAML\Auth\ProcessingChain::resumeProcessing($state);
 }elseif(array_key_exists('no', $_REQUEST)){
-  SimpleSAML_Stats::log('coSelection:abort', $statsInfo);
+  \SimpleSAML\Stats::log('coSelection:abort', $statsInfo);
   // Resume processing
-  SimpleSAML_Auth_ProcessingChain::resumeProcessing($state);
+  \SimpleSAML\Auth\ProcessingChain::resumeProcessing($state);
 }
 
 
@@ -85,15 +85,15 @@ if (array_key_exists('yes', $_REQUEST)) {
 ///
 
 // Make, populate and layout attribute selection form
-$t = new SimpleSAML_XHTML_Template($globalConfig, 'coselection:coselectionform.php');
+$t = new \SimpleSAML\XHTML\Template($globalConfig, 'coselection:coselectionform.php');
 $t->data['srcMetadata'] = $state['Source'];
 $t->data['dstMetadata'] = $state['Destination'];
-$t->data['yesTarget'] = SimpleSAML_Module::getModuleURL('coselection/getcoselection.php');
+$t->data['yesTarget'] = \SimpleSAML\Module::getModuleURL('coselection/getcoselection.php');
 $t->data['yesData'] = array('StateId' => $id);
-$t->data['noTarget'] = SimpleSAML_Module::getModuleURL('coselection/nocoselection.php');
+$t->data['noTarget'] = \SimpleSAML\Module::getModuleURL('coselection/nocoselection.php');
 $t->data['noData'] = array('StateId' => $id);
 $t->data['attributes'] = $state['Attributes'];
-$t->data['logoutLink'] = SimpleSAML_Module::getModuleURL('coselection/logout.php');
+$t->data['logoutLink'] = \SimpleSAML\Module::getModuleURL('coselection/logout.php');
 $t->data['logoutData'] = array('StateId' => $id);
 // Fetch privacypolicy
 if (array_key_exists('privacypolicy', $state['Destination'])) {

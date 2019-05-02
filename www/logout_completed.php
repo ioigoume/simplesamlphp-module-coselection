@@ -5,6 +5,6 @@
  * @package SimpleSAMLphp
  */
 
-$globalConfig = SimpleSAML_Configuration::getInstance();
-$t = new SimpleSAML_XHTML_Template($globalConfig, 'coselection:logout_completed.php');
+$globalConfig = \SimpleSAML\Configuration::getInstance();
+$t = new \SimpleSAML\XHTML\Template($globalConfig, 'coselection:logout_completed.php');
 $t->show();
