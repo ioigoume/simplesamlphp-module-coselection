@@ -5,11 +5,14 @@
  *
  * @package SimpleSAMLphp
  */
-class sspmod_coselection_Logout {
 
-	public static function postLogout(SimpleSAML_IdP $idp, array $state) {
-		//$url = SimpleSAML_Module::getModuleURL('coselection/logout_completed.php');
-		$restartURL = $state[SimpleSAML_Auth_State::RESTART];
+namespace SimpleSAML\Module\CoSelection;
+
+class Logout {
+
+	public static function postLogout(\SimpleSAML\IdP $idp, array $state) {
+		//$url = \SimpleSAML\Module::getModuleURL('coselection/logout_completed.php');
+		$restartURL = $state[\SimpleSAML\Auth\State::RESTART];
 		\SimpleSAML\Utils\HTTP::redirectTrustedURL($restartURL);
 	}
 
