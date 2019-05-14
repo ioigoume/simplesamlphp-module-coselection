@@ -20,7 +20,7 @@
  *  ),
  */
 
-namespace SimpleSAML\Module\saml\Auth\Process;
+namespace SimpleSAML\Module\coselection\Auth\Process;
 
 class CoSelection extends \SimpleSAML\Auth\ProcessingFilter {
 
