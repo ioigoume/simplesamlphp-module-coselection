@@ -96,7 +96,7 @@ Disable attribute selection for a given IdP:
 
     $metadata['https://idp.example.org/'] = array(
         [...],
-        'attributeselection.disable' => TRUE,
+        'attributeselection.disable' => true,
     );
 
 Disable attribute selection for some SPs connected to a given IdP:
@@ -114,7 +114,7 @@ Disable attribute selection for a given SP:
 
     $metadata['https://sp.example.org'] = array(
         [...]
-        'attributeselection.disable' => TRUE,
+        'attributeselection.disable' => true,
     ),
 
 Disable attribute selection for some IdPs for a given SP:

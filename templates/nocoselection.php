@@ -21,18 +21,18 @@ echo '<h2>' . $this->data['header'] . '</h2>';
 echo '<p>' . $this->t('{coselection:coselection:no_co_selection_text}', array('SPNAME' => $dstName)) . '</p>';
 
 if ($this->data['resumeFrom']) {
-    echo('<p><a href="' . htmlspecialchars($this->data['resumeFrom']) . '">');
-    echo($this->t('{coselection:coselection:no_co_selection_return}'));
-    echo('</a></p>');
+    echo ('<p><a href="' . htmlspecialchars($this->data['resumeFrom']) . '">');
+    echo ($this->t('{coselection:coselection:no_co_selection_return}'));
+    echo ('</a></p>');
 }
 
 if ($this->data['aboutService']) {
-    echo('<p><a href="' . htmlspecialchars($this->data['aboutService']) . '">');
-    echo($this->t('{coselection:coselection:no_co_selection_goto_about}'));
-    echo('</a></p>');
+    echo ('<p><a href="' . htmlspecialchars($this->data['aboutService']) . '">');
+    echo ($this->t('{coselection:coselection:no_co_selection_goto_about}'));
+    echo ('</a></p>');
 }
 
-echo('<p><a href="' . htmlspecialchars($this->data['logoutLink']) . '">' . $this->t('{coselection:coselection:abort}', array('SPNAME' => $dstName)) . '</a></p>');
+echo ('<p><a href="' . htmlspecialchars($this->data['logoutLink']) . '">' . $this->t('{coselection:coselection:abort}', array('SPNAME' => $dstName)) . '</a></p>');
 
 
 $this->includeAtTemplateBase('includes/footer.php');

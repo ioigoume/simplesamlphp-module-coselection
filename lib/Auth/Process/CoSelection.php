@@ -2,12 +2,10 @@
 
 namespace SimpleSAML\Module\coselection\Auth\Process;
 
-use SimpleSAML\Auth\ProcessingChain;
-use SimpleSAML\Auth\State;
+use SimpleSAML\Auth;
 use SimpleSAML\Configuration;
 use SimpleSAML\Database;
-use SimpleSAML\Error\Exception;
-use SimpleSAML\Error\NoPassive;
+use SimpleSAML\Error;
 use SimpleSAML\Logger;
 use SimpleSAML\Metadata\MetaDataStorageHandler;
 use SimpleSAML\Module;
@@ -74,7 +72,7 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
         parent::__construct($config, $reserved);
         if (array_key_exists('requiredattributes', $config)) {
             if (!is_array($config['requiredattributes'])) {
-                throw new Exception(
+                throw new Error\Exception(
                     'CoSelection: requiredattributes must be an array. ' .
                         var_export($config['requiredattributes'], true) . ' given.'
                 );
@@ -97,7 +95,7 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
     private static function checkDisable($option, $entityId)
     {
         if (is_array($option)) {
-            return in_array($entityId, $option, TRUE);
+            return in_array($entityId, $option, true);
         } else {
             return (boolean)$option;
         }
@@ -132,8 +130,8 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
          */
         if (isset($state['saml:sp:IdP'])) {
             $idpEntityId = $state['saml:sp:IdP'];
-            $idpmeta = $metadata->getMetaData($idpEntityId, 'saml20-idp-remote');
-            $state['Source'] = $idpmeta;
+            $idpMeta = $metadata->getMetaData($idpEntityId, 'saml20-idp-remote');
+            $state['Source'] = $idpMeta;
         }
         $statsData = ['spEntityID' => $spEntityId];
         // Do not use attribute selection if disabled
@@ -153,7 +151,7 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
         // User interaction nessesary. Throw exception on isPassive request
         if (isset($state['isPassive']) && $state['isPassive'] === true) {
             Stats::log('coselection:nopassive', $statsData);
-            throw new NoPassive(
+            throw new Error\NoPassive(
                 'Unable to give attribute selection on passive request.'
             );
         }
@@ -206,7 +204,7 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
 
             Stats::log('coSelection:accept', $statsInfo);
             // Resume processing
-            ProcessingChain::resumeProcessing($state);
+            Auth\ProcessingChain::resumeProcessing($state);
         } elseif (!isset($state['coselection:coMembership']) || count($state['coselection:coMembership']) < 1) {
             // Remove the fields that we do not want any more
             if (array_key_exists('coselection:coMembership', $state)) {
@@ -221,7 +219,7 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
             return;
         } else {
             // Save state and redirect
-            $id = State::saveState($state, 'coselection:request');
+            $id = Auth\State::saveState($state, 'coselection:request');
             $url = Module::getModuleURL('coselection/getcoselection.php');
             HTTP::redirectTrustedURL($url, ['StateId' => $id]);
         }
@@ -243,7 +241,7 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
                 return $result;
             }
         } else {
-            throw new Exception('Failed to communicate with COmanage Registry: ' . var_export($db->getLastError(), true));
+            throw new Error\Exception('Failed to communicate with COmanage Registry: ' . var_export($db->getLastError(), true));
         }
 
         return null;
