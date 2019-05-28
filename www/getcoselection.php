@@ -1,4 +1,13 @@
 <?php
+
+use SimpleSAML\Auth;
+use SimpleSAML\Configuration;
+use SimpleSAML\Error\BadRequest;
+use SimpleSAML\Logger;
+use SimpleSAML\Module;
+use SimpleSAML\Stats;
+use SimpleSAML\XHTML\Template;
+
 /**
  * Attribute selection script
  *
@@ -18,15 +27,15 @@
  * so this is just to make sure.
  */
 session_cache_limiter('nocache');
-$globalConfig = \SimpleSAML\Configuration::getInstance();
-\SimpleSAML\Logger::info('CoSelection - coselection: Accessing co selection interface');
+$globalConfig = Configuration::getInstance();
+Logger::info('CoSelection - coselection: Accessing co selection interface');
 if (!array_key_exists('StateId', $_REQUEST)) {
-    throw new \SimpleSAML\Error\BadRequest(
+    throw new BadRequest(
         'Missing required StateId query parameter.'
     );
 }
 $id = $_REQUEST['StateId'];
-$state = \SimpleSAML\Auth\State::loadState($id, 'coselection:request');
+$state = Auth\State::loadState($id, 'coselection:request');
 
 // Handle user's choice and return to simplesaml to load the next plugin
 if (array_key_exists('coSelection', $_REQUEST)) {
@@ -34,8 +43,8 @@ if (array_key_exists('coSelection', $_REQUEST)) {
   $choice = explode(":", $_REQUEST['coSelection']);
   $cosInState = $state['coselection:coMembership'];
   if($cosInState[$choice[0]] != $choice[1]){
-    \SimpleSAML\Logger::debug('getcoselection: the requested co is not in the retrieved list ');
-    throw new \SimpleSAML\Error\BadRequest('Missing required CO id retrieved from query.');
+    Logger::debug('getcoselection: the requested co is not in the retrieved list ');
+    throw new BadRequest('Missing required CO id retrieved from query.');
   }else{
     // Add the CO selected in the state
     $state['COSelected'] = array($choice[0] => $choice[1]);
@@ -44,11 +53,11 @@ if (array_key_exists('coSelection', $_REQUEST)) {
 
 
 if (array_key_exists('core:SP', $state)) {
-    $spentityid = $state['core:SP'];
+    $spEntityId = $state['core:SP'];
 } else if (array_key_exists('saml:sp:State', $state)) {
-    $spentityid = $state['saml:sp:State']['core:SP'];
+    $spEntityId = $state['saml:sp:State']['core:SP'];
 } else {
-    $spentityid = 'UNKNOWN';
+    $spEntityId = 'UNKNOWN';
 }
 
 // The user has pressed the yes-button
@@ -70,13 +79,13 @@ if ( array_key_exists('yes', $_REQUEST) || array_key_exists('no', $_REQUEST) ) {
 
 // The user has pressed the yes-button
 if (array_key_exists('yes', $_REQUEST)) {
-  \SimpleSAML\Stats::log('coSelection:accept', $statsInfo);
+  Stats::log('coSelection:accept', $statsInfo);
   // Resume processing
-  \SimpleSAML\Auth\ProcessingChain::resumeProcessing($state);
+  Auth\ProcessingChain::resumeProcessing($state);
 }elseif(array_key_exists('no', $_REQUEST)){
-  \SimpleSAML\Stats::log('coSelection:abort', $statsInfo);
+  Stats::log('coSelection:abort', $statsInfo);
   // Resume processing
-  \SimpleSAML\Auth\ProcessingChain::resumeProcessing($state);
+  Auth\ProcessingChain::resumeProcessing($state);
 }
 
 
@@ -85,32 +94,32 @@ if (array_key_exists('yes', $_REQUEST)) {
 ///
 
 // Make, populate and layout attribute selection form
-$t = new \SimpleSAML\XHTML\Template($globalConfig, 'coselection:coselectionform.php');
+$t = new Template($globalConfig, 'coselection:coselectionform.php');
 $t->data['srcMetadata'] = $state['Source'];
 $t->data['dstMetadata'] = $state['Destination'];
-$t->data['yesTarget'] = \SimpleSAML\Module::getModuleURL('coselection/getcoselection.php');
+$t->data['yesTarget'] = Module::getModuleURL('coselection/getcoselection.php');
 $t->data['yesData'] = array('StateId' => $id);
-$t->data['noTarget'] = \SimpleSAML\Module::getModuleURL('coselection/nocoselection.php');
+$t->data['noTarget'] = Module::getModuleURL('coselection/nocoselection.php');
 $t->data['noData'] = array('StateId' => $id);
 $t->data['attributes'] = $state['Attributes'];
-$t->data['logoutLink'] = \SimpleSAML\Module::getModuleURL('coselection/logout.php');
+$t->data['logoutLink'] = Module::getModuleURL('coselection/logout.php');
 $t->data['logoutData'] = array('StateId' => $id);
-// Fetch privacypolicy
+// Fetch privacyPolicy
 if (array_key_exists('privacypolicy', $state['Destination'])) {
-    $privacypolicy = $state['Destination']['privacypolicy'];
+    $privacyPolicy = $state['Destination']['privacypolicy'];
 } elseif (array_key_exists('privacypolicy', $state['Source'])) {
-    $privacypolicy = $state['Source']['privacypolicy'];
+    $privacyPolicy = $state['Source']['privacypolicy'];
 } else {
-    $privacypolicy = false;
+    $privacyPolicy = false;
 }
-if ($privacypolicy !== false) {
-    $privacypolicy = str_replace(
+if ($privacyPolicy !== false) {
+    $privacyPolicy = str_replace(
         '%SPENTITYID%',
-        urlencode($spentityid), 
-        $privacypolicy
+        urlencode($spEntityId), 
+        $privacyPolicy
     );
 }
-$t->data['sppp'] = $privacypolicy;
+$t->data['sppp'] = $privacyPolicy;
 if (array_key_exists('coselection:coMembership', $state)) {
     $t->data['selectco'] = $state['coselection:coMembership'];
 } else {

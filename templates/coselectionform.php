@@ -1,4 +1,7 @@
 <?php
+
+use SimpleSAML\Module;
+
 /**
  * Template form for attribute selection.
  *
@@ -60,7 +63,7 @@ if (is_array($dstName)) {
 $srcName = htmlspecialchars($srcName);
 $dstName = htmlspecialchars($dstName);
 $attributes = $this->data['attributes'];
-$selectcos = $this->data['selectco'];
+$selectCos = $this->data['selectco'];
 $this->data['header'] = $this->t('{coselection:coselection:co_selection_header}');
 $this->data['head'] = '<link rel="stylesheet" type="text/css" href="/' . $this->data['baseurlpath'] . 'module.php/coselection/resources/css/style.css" />' . "\n";
 $this->includeAtTemplateBase('includes/header.php');
@@ -89,9 +92,9 @@ $this->includeAtTemplateBase('includes/header.php');
 //    ));
   }
 
-//  echo present_cos($selectcos);
-  echo "<script type=\"text/javascript\" src=\"" . htmlspecialchars(SimpleSAML_Module::getModuleURL('coselection/resources/js/jquery-3.3.1.slim.min.js')) . "\"></script>";
-  echo "<script type=\"text/javascript\" src=\"" . htmlspecialchars(SimpleSAML_Module::getModuleURL('coselection/resources/js/attributeselector.js')) . "\"></script>";
+//  echo presentCos($selectCos);
+  echo "<script type=\"text/javascript\" src=\"" . htmlspecialchars(Module::getModuleURL('coselection/resources/js/jquery-3.3.1.slim.min.js')) . "\"></script>";
+  echo "<script type=\"text/javascript\" src=\"" . htmlspecialchars(Module::getModuleURL('coselection/resources/js/attributeselector.js')) . "\"></script>";
 
 
 ?>
@@ -103,7 +106,7 @@ $this->includeAtTemplateBase('includes/header.php');
       foreach($this->data['yesData'] as $name => $value) {
         echo '<input type="hidden" name="' . htmlspecialchars($name) . '" value="' . htmlspecialchars($value) . '" />';
       }
-      echo present_cos($selectcos);
+      echo presentCos($selectCos);
       //echo '<input type="hidden" name="coSelection" />';
     ?>
   </p>
@@ -141,12 +144,12 @@ if ($this->data['sppp'] !== false) {
  * @return string HTML representation of the attributes
  */
 
-function present_cos($selectcos)
+function presentCos($selectCos)
 {
 
   $str= '<div>';
   $str.= '<ul style="list-style-type: none">';
-  foreach($selectcos as $id => $name) {
+  foreach($selectCos as $id => $name) {
       // create the radio buttons
       $str .= '<li><input class="attribute-selection" style="margin-right: 10px" type="radio" value="'.$id.':'.$name.'" name="coSelection">'.$name.'<br></li>';
   } // end foreach
