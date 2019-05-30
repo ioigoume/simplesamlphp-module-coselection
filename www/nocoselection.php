@@ -23,17 +23,17 @@ $state = State::loadState($id, 'coselection:request');
 
 $resumeFrom = Module::getModuleURL(
     'coselection/getcoselection.php',
-    array('StateId' => $id)
+    ['StateId' => $id]
 );
 
 $logoutLink = Module::getModuleURL(
     'coselection/logout.php',
-    array('StateId' => $id)
+    ['StateId' => $id]
 );
 
 $aboutService = null;
 
-$statsInfo = array();
+$statsInfo = [];
 if (isset($state['Destination']['entityid'])) {
     $statsInfo['spEntityID'] = $state['Destination']['entityid'];
 }

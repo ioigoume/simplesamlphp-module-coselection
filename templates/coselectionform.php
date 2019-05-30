@@ -72,24 +72,24 @@ $this->includeAtTemplateBase('includes/header.php');
 <?php
 
   if (array_key_exists('descr_purpose', $this->data['dstMetadata'])) {
-    echo '<br>' . $this->t('{coselection:coselection:co_selection_purpose}', array(
+    echo '<br>' . $this->t('{coselection:coselection:co_selection_purpose}', [
       'SPNAME' => $dstName,
       'SPDESC' => $this->getTranslation(SimpleSAMLUtilsArrays::arrayize($this->data['dstMetadata']['descr_purpose'], 'en')) ,
-    ));
+    ]);
   }
 
-  echo '<h3 id="attributeheader">' . $this->t('{coselection:coselection:co_selection_cos_header}', array(
+  echo '<h3 id="attributeheader">' . $this->t('{coselection:coselection:co_selection_cos_header}', [
       'SPNAME' => $dstName,
       'IDPNAME' => $srcName
-    )) . '</h3>';
+    ]) . '</h3>';
 
   if (!empty($this->data['intro'])) {
     echo '<h4 id="intro_header">'.$this->data['intro'].'</h4>';
 //  } else {
-//    echo $this->t('{coselection:coselection:co_selection_accept}', array(
+//    echo $this->t('{coselection:coselection:co_selection_accept}', [
 //      'SPNAME' => $dstName,
 //      'IDPNAME' => $srcName
-//    ));
+//    ]);
   }
 
 //  echo presentCos($selectCos);

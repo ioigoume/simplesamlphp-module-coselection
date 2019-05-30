@@ -47,7 +47,7 @@ if (array_key_exists('coSelection', $_REQUEST)) {
     throw new BadRequest('Missing required CO id retrieved from query.');
   }else{
     // Add the CO selected in the state
-    $state['COSelected'] = array($choice[0] => $choice[1]);
+    $state['COSelected'] = [$choice[0] => $choice[1]];
   }
 }
 
@@ -98,12 +98,12 @@ $t = new Template($globalConfig, 'coselection:coselectionform.php');
 $t->data['srcMetadata'] = $state['Source'];
 $t->data['dstMetadata'] = $state['Destination'];
 $t->data['yesTarget'] = Module::getModuleURL('coselection/getcoselection.php');
-$t->data['yesData'] = array('StateId' => $id);
+$t->data['yesData'] = ['StateId' => $id];
 $t->data['noTarget'] = Module::getModuleURL('coselection/nocoselection.php');
-$t->data['noData'] = array('StateId' => $id);
+$t->data['noData'] = ['StateId' => $id];
 $t->data['attributes'] = $state['Attributes'];
 $t->data['logoutLink'] = Module::getModuleURL('coselection/logout.php');
-$t->data['logoutData'] = array('StateId' => $id);
+$t->data['logoutData'] = ['StateId' => $id];
 // Fetch privacyPolicy
 if (array_key_exists('privacypolicy', $state['Destination'])) {
     $privacyPolicy = $state['Destination']['privacypolicy'];
@@ -123,12 +123,12 @@ $t->data['sppp'] = $privacyPolicy;
 if (array_key_exists('coselection:coMembership', $state)) {
     $t->data['selectco'] = $state['coselection:coMembership'];
 } else {
-    $t->data['selectco'] = array();
+    $t->data['selectco'] = [];
 }
 
 if (array_key_exists('coselection:intro', $state)) {
     $t->data['intro'] = $state['coselection:intro'];
 } else {
-    $t->data['intro'] = array();
+    $t->data['intro'] = [];
 }
 $t->show();

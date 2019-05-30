@@ -8,14 +8,14 @@ In order to enable the plugin follow the steps below:
 
 # Example authproc filter configuration
 ```bash
-165             80 => array(
-166                 'class' => 'coselection:CoSelection',
-167                 'intro' => 'VO list:', // default to null
-168                 'requiredattributes' => array(
-169                     'eduPersonUniqueId' => array(
-170                         //'mode' => 'radio',
-171                     ),
-172                 ),
-173             ),
+80 => [
+    'class' => 'coselection:CoSelection',
+    'intro' => 'VO list:', // default to null
+    'requiredattributes' => [
+        'eduPersonUniqueId' => [
+            //'mode' => 'radio',
+        ],
+    ],
+],
 ```
 - The plugin must be triggered before the `attrauthcomanage` one.
