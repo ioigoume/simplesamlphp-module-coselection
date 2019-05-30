@@ -31,12 +31,17 @@ use SimpleSAML\XHTML\Template;
  *              //'mode' => 'radio',
  *          ],
  *      ],
+ *      // List of SP entity IDs that should be excluded
+ *      // 'spBlacklist' => [],
  *   ],
  */
 class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
 {
 
     private $userIdAttribute = 'eduPersonUniqueId';
+
+    // List of SP entity IDs that should be excluded from this filter.
+    private $spBlacklist = [];
 
     private $basicInfoQuery = 'SELECT'
         . ' person.co_id,'
@@ -78,6 +83,18 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
                 );
             }
             $this->requiredAttributes = $config['requiredattributes'];
+        }
+
+        if (array_key_exists('spBlacklist', $config)) {
+            if (!is_array($config['spBlacklist'])) {
+                Logger::error(
+                    "[authnauthority] Configuration error: 'spBlacklist' not an array"
+                );
+                throw new Exception(
+                    "authnauthority configuration error: 'spBlacklist' not an array"
+                );
+            }
+            $this->spBlacklist = $config['spBlacklist'];
         }
 
         if (array_key_exists('intro', $config)) {
@@ -122,6 +139,19 @@ class CoSelection extends \SimpleSAML\Auth\ProcessingFilter
         $idpEntityId = $state['Source']['entityid'];
         $userAttributes = $state['Attributes'];
         $metadata = MetaDataStorageHandler::getMetadataHandler();
+
+        Logger::debug("NIKOSEV: COselection: spEntityId:" . var_export($spEntityId, true));
+        if (
+            !empty($spEntityId)
+            && in_array($spEntityId, $this->spBlacklist, true)
+        ) {
+            Logger::debug(
+                "[authnauthority] process: Blacklisted SP "
+                    . var_export($spEntityId, true)
+                    . " - Skipping..."
+            );
+            return;
+        }
         /**
          * If the attribute selection module is active on a bridge $state['saml:sp:IdP']
          * will contain an entry id for the remote IdP. If not, then the

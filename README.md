@@ -16,6 +16,8 @@ In order to enable the plugin follow the steps below:
             //'mode' => 'radio',
         ],
     ],
+    // List of SP entity IDs that should be excluded
+    //'spBlacklist' => [],
 ],
 ```
 - The plugin must be triggered before the `attrauthcomanage` one.
