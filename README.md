@@ -16,6 +16,9 @@ In order to enable the plugin follow the steps below:
 170                         //'mode' => 'radio',
 171                     ),
 172                 ),
-173             ),
+173                 'blacklist' => array(
+174                     'https://example.com/registry/shibboleth',
+175                 ),
+176             ),
 ```
 - The plugin must be triggered before the `attrauthcomanage` one.
