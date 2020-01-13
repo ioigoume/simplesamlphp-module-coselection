@@ -8,20 +8,27 @@
  * @package SimpleSAMLphp
  *
  * Configuration:
- *  // co selection
- *  75 => array(
- *        'class' => 'coselection:CoSelection',
- *        'intro' => 'Choose CO from list', // default to null
- *        'requiredattributes' => array(
- *        'eduPersonUniqueId' => array(
- *        //'mode' => 'radio',
- *      ),
- *    ),
- *  ),
+ * 79 => array(
+ *   'class' => 'coselection:CoSelection',
+ *   //'intro' => 'VO list:', // default to null
+ *   'requiredattributes' => array(
+ *     'eduPersonUniqueId' => array(
+ *       //'mode' => 'radio',
+ *     ),
+ *   ),
+ *   'blacklist' => array(
+ *     'https://aai-dev.egi.eu/registry/shibboleth',
+ *     'https://comanage-dev.aai-dev.grnet.gr/registry/shibboleth',
+ *     'https://comanage-upstream.aai-dev.grnet.gr/registry/shibboleth',
+ *   ),
+ * ),
  */
 class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_ProcessingFilter {
 
   private $_userIdAttribute = 'eduPersonUniqueId';
+
+  // List of SP entity IDs that should be excluded from this filter.
+  private $_blacklist = array();
 
   private $_basicInfoQuery = 'select'
     . ' person.co_id,'
@@ -63,7 +70,14 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
       }
       $this->_requiredattributes = $config['requiredattributes'];
     }
-
+    if (array_key_exists('blacklist', $config)) {
+      if (!is_array($config['blacklist'])) {
+        SimpleSAML_Logger::error("CoSelection Configuration error: 'blacklist' not an array");
+        throw new SimpleSAML_Error_Exception(
+          "CoSelection configuration error: 'blacklist' not an array");
+      }
+      $this->_blacklist = $config['blacklist'];
+    }
     if (array_key_exists('intro', $config)) {
       $this->_intro = $config['intro'];
     }
@@ -104,6 +118,11 @@ class sspmod_coselection_Auth_Process_CoSelection extends SimpleSAML_Auth_Proces
     $idpEntityId = $state['Source']['entityid'];
     $userAttributes = $state['Attributes'];
     $metadata = SimpleSAML_Metadata_MetaDataStorageHandler::getMetadataHandler();
+
+    if (isset($state['SPMetadata']['entityid']) && in_array($state['SPMetadata']['entityid'], $this->_blacklist, true)) {
+      SimpleSAML_Logger::debug("CoSelection: Skipping blacklisted SP ". var_export($state['SPMetadata']['entityid'], true));
+      return;
+    }
     /**
      * If the attribute selection module is active on a bridge $state['saml:sp:IdP']
      * will contain an entry id for the remote IdP. If not, then the
