@@ -18,7 +18,7 @@ $this->data['header'] = $this->t('{coselection:coselection:no_co_selection_title
 $this->includeAtTemplateBase('includes/header.php');
 
 echo '<h2>' . $this->data['header'] . '</h2>';
-echo '<p>' . $this->t('{coselection:coselection:no_co_selection_text}', array('SPNAME' => $dstName)) . '</p>';
+echo '<p>' . $this->t('{coselection:coselection:no_co_selection_text}', ['SPNAME' => $dstName]) . '</p>';
 
 if ($this->data['resumeFrom']) {
     echo ('<p><a href="' . htmlspecialchars($this->data['resumeFrom']) . '">');
@@ -32,7 +32,7 @@ if ($this->data['aboutService']) {
     echo ('</a></p>');
 }
 
-echo ('<p><a href="' . htmlspecialchars($this->data['logoutLink']) . '">' . $this->t('{coselection:coselection:abort}', array('SPNAME' => $dstName)) . '</a></p>');
+echo ('<p><a href="' . htmlspecialchars($this->data['logoutLink']) . '">' . $this->t('{coselection:coselection:abort}', ['SPNAME' => $dstName]) . '</a></p>');
 
 
 $this->includeAtTemplateBase('includes/footer.php');

@@ -15,7 +15,7 @@ if (!array_key_exists('StateId', $_GET)) {
 }
 $state = State::loadState($_GET['StateId'], 'coselection:request');
 
-$state['Responder'] = array('sspmod_coselection_Logout', 'postLogout');
+$state['Responder'] = ['SimpleSAML\Module\coselection\Logout', 'postLogout'];
 
 $idp = IdP::getByState($state);
 $idp->handleLogoutRequest($state, null);

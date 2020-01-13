@@ -1,6 +1,6 @@
 <?php
 
-namespace SimpleSAML\Module\CoSelection;
+namespace SimpleSAML\Module\coselection;
 
 use SimpleSAML\Auth\State;
 use SimpleSAML\Utils\HTTP;
